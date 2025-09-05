@@ -1,229 +1,234 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
-<style>
-/* Global reset only for wrapper */
-#fcHeaderWrapper { margin: 0; padding: 0; }
+<div id="header">
+  <header class="site-header">
+    <nav class="navbar">
+      <!-- Sol taraf (Brand) -->
+      <div class="brand">First Class</div>
 
-/* ====== Scoped header styles (namespace: #fcHeaderWrapper .fc-header) ====== */
-#fcHeaderWrapper .fc-header { box-sizing: border-box; font-family: 'Quicksand', sans-serif; }
-#fcHeaderWrapper .fc-header *, 
-#fcHeaderWrapper .fc-header *::before, 
-#fcHeaderWrapper .fc-header *::after { box-sizing: inherit; }
+      <!-- Hamburger (mobil) -->
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
 
-/* Header base */
-#fcHeaderWrapper .fc-header {
-  background: #181a27;
-  color: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 9999;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-  padding: 14px 0; /* dikey büyütme */
-  margin: 0;       /* dış boşluk yok */
-}
-
-/* Container */
-#fcHeaderWrapper .fc-header__container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px; /* kenarlara nefes için iç padding */
-}
-
-/* Logo */
-#fcHeaderWrapper .fc-header__logo {
-  font-size: 22px;
-  font-weight: 700;
-  color: #4da3ff;
-  letter-spacing: 0.5px;
-}
-
-/* Nav */
-#fcHeaderWrapper .fc-header__nav {
-  display: flex;
-  gap: 26px;
-  align-items: center;
-}
-
-/* Links */
-#fcHeaderWrapper .fc-header__link {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 15px;
-  position: relative;
-  padding: 8px 0; /* dikey büyütme */
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: color .20s ease, background .18s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Icons */
-#fcHeaderWrapper .fc-header .fc-icon {
-  width: 18px;
-  height: 18px;
-  stroke: currentColor;
-  fill: none;
-  flex-shrink: 0;
-}
-
-/* Hover & focus */
-#fcHeaderWrapper .fc-header__link:hover,
-#fcHeaderWrapper .fc-header__link:focus {
-  color: #4da3ff;
-  outline: none;
-}
-
-/* Underline indicator */
-#fcHeaderWrapper .fc-header__link::after {
-  content: "";
-  position: absolute;
-  bottom: -6px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: #4da3ff;
-  transition: width .22s ease;
-  border-radius: 2px;
-}
-#fcHeaderWrapper .fc-header__link:hover::after,
-#fcHeaderWrapper .fc-header__link:focus::after {
-  width: 100%;
-}
-
-/* Active */
-#fcHeaderWrapper .fc-header__link--active {
-  color: #4da3ff !important;
-}
-#fcHeaderWrapper .fc-header__link--active::after {
-  width: 100% !important;
-}
-
-/* Hamburger */
-#fcHeaderWrapper .fc-header__toggle {
-  display: none;
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  #fcHeaderWrapper .fc-header__nav {
-    position: absolute;
-    top: 70px;
-    right: 14px;
-    flex-direction: column;
-    background: #23263a;
-    border: 1px solid rgba(255,255,255,0.04);
-    border-radius: 10px;
-    padding: 10px;
-    display: none;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-    max-height: calc(100vh - 80px);
-    overflow-y: auto;
-    min-width: 180px;
-  }
-  #fcHeaderWrapper .fc-header__nav--open { display: flex !important; }
-
-  #fcHeaderWrapper .fc-header__link {
-    padding: 12px 14px;
-    border-radius: 6px;
-    font-size: 14px;
-    width: 100%;
-  }
-  #fcHeaderWrapper .fc-header__link:hover,
-  #fcHeaderWrapper .fc-header__link:focus {
-    background: #2e324a;
-    color: #4da3ff;
-  }
-
-  #fcHeaderWrapper .fc-header__toggle { display: block; }
-}
-</style>
-</head>
-<body style="margin:0; padding:0;">
-
-<div id="fcHeaderWrapper">
-  <header class="fc-header" role="banner" aria-label="Site header">
-    <div class="fc-header__container">
-      <div class="fc-header__logo">First Class</div>
-
-      <nav class="fc-header__nav" id="fcNav" aria-label="Ana menü">
-        <a href="/firstclass.html" class="fc-header__link" data-page="firstclass.html">
-          <svg class="fc-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 22s8-6.58 8-12A8 8 0 1 0 4 10c0 5.42 8 12 8 12Z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          Havale/EFT
-        </a>
-
-        <a href="/dekont.html" class="fc-header__link" data-page="dekont.html">
-          <svg class="fc-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>
-            <polyline points="14 2 14 8 20 8"/>
-          </svg>
-          Dekont
-        </a>
-      </nav>
-
-      <button class="fc-header__toggle" id="fcMenuToggle" aria-label="Menüyü aç/kapat" aria-expanded="false">
-        ☰
-      </button>
-    </div>
+      <!-- Menü Panel -->
+      <div class="menu-panel" id="menu-panel">
+        <ul class="menu">
+          <li><a href="firstclass.html"><i class="fa fa-exchange-alt"></i> Havale/EFT</a></li>
+          <li>
+            <a href="dekont.html" class="with-badge"><i class="fa fa-file-invoice"></i> Dekont
+              <span class="badge">Yeni!</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
   </header>
 </div>
 
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+/* Scoped Header */
+#header {
+  all: initial;
+  font-family: 'Quicksand', sans-serif;
+  display: block;
+}
+
+/* Header içi */
+#header .site-header {
+  all: unset;
+  display: block;
+  background: #1e1e2f;
+  border-bottom: 1px solid #2e2e40;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  padding: 10px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* Navbar */
+#header .navbar {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* Brand */
+#header .brand {
+  all: unset;
+  display: inline-block;
+  font-size: 22px;
+  font-weight: 700;
+  color: #4da6ff;
+  letter-spacing: 1px;
+  animation: glow 2.5s ease-in-out infinite;
+}
+@keyframes glow {
+  0% { text-shadow: 0 0 5px #4da6ff, 0 0 10px #4da6ff; }
+  50% { text-shadow: 0 0 15px #4da6ff, 0 0 30px #0077ff; }
+  100% { text-shadow: 0 0 5px #4da6ff, 0 0 10px #4da6ff; }
+}
+
+/* Menü Panel */
+#header .menu-panel {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+}
+#header .menu {
+  all: unset;
+  list-style: none;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+#header .menu li a {
+  all: unset;
+  text-decoration: none;
+  color: #ddd;
+  font-weight: 600;
+  transition: color .2s, background .2s;
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+#header .menu li a:hover {
+  color: #fff;
+  background: #2e2e40;
+}
+
+/* Badge */
+#header .badge {
+  all: unset;
+  background: #ff3b3b;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 6px;
+  line-height: 1;
+}
+#header .with-badge {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Hamburger */
+#header .hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 25px;
+  height: 18px;
+  cursor: pointer;
+  z-index: 1100;
+}
+#header .hamburger span {
+  display: block;
+  height: 3px;
+  background: #4da6ff;
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #header .menu-panel {
+    display: none;
+    width: 100%;
+    background: #1e1e2f;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    padding: 10px 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    flex-direction: column;
+    align-items: center;
+    z-index: 1050;
+  }
+  #header .menu-panel.active {
+    display: flex;
+  }
+  #header .menu {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  #header .menu li a {
+    width: 90%;
+    text-align: center;
+    padding: 10px 0;
+  }
+  #header .hamburger {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  #header .brand {
+    font-size: 20px;
+  }
+  #header .menu li a {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}
+
+/* Modern Scrollbar (dark, header altından başlar) */
+body {
+  padding-top: 60px;
+  font-family: 'Quicksand', sans-serif;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #4da6ff #12121c;
+}
+
+body::-webkit-scrollbar {
+  width: 6px;
+}
+
+body::-webkit-scrollbar-track {
+  background: #12121c;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #4da6ff;
+  border-radius: 3px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background-color: #1e90ff;
+}
+</style>
+
 <script>
-(function(){
-  const toggle = document.getElementById('fcMenuToggle');
-  const nav = document.getElementById('fcNav');
+document.addEventListener("DOMContentLoaded", () => {
+  const hamburger = document.querySelector("#header .hamburger");
+  const menuPanel = document.querySelector("#header .menu-panel");
 
-  if (!nav || !toggle) return;
-
-  // Toggle menu (mobile)
-  toggle.addEventListener('click', function(){
-    const isOpen = nav.classList.toggle('fc-header__nav--open');
-    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  hamburger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menuPanel.classList.toggle("active");
   });
 
-  // Close menu when clicking outside
-  document.addEventListener('click', function(e){
-    if (!nav.classList.contains('fc-header__nav--open')) return;
-    if (!nav.contains(e.target) && !toggle.contains(e.target)) {
-      nav.classList.remove('fc-header__nav--open');
-      toggle.setAttribute('aria-expanded', 'false');
+  document.addEventListener("click", (e) => {
+    if (!menuPanel.contains(e.target) && !hamburger.contains(e.target)) {
+      menuPanel.classList.remove("active");
     }
   });
-
-  // Close on Esc
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && nav.classList.contains('fc-header__nav--open')) {
-      nav.classList.remove('fc-header__nav--open');
-      toggle.setAttribute('aria-expanded', 'false');
-    }
-  });
-
-  // Highlight active link
-  const current = window.location.pathname.split("/").pop();
-  const links = nav.querySelectorAll('.fc-header__link');
-  links.forEach(link => {
-    if (link.dataset.page === current) {
-      link.classList.add('fc-header__link--active');
-    }
-  });
-})();
+});
 </script>
-
-</body>
-</html>
