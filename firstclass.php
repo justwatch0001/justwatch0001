@@ -1,0 +1,370 @@
+<?php include "assets/header.php"; ?>
+<?php // transfer.php (responsive + compact amount) ?>
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>First Class - Havale/EFT</title>
+<style>
+  :root{
+    --blue:#1e88e5; --blue-600:#156ec0; --blue-50:#f0f7ff;
+    --ink:#223042; --muted:#6b7a8b; --line:#d6e0ea; --bg:#f3f7fb; --white:#fff; --radius:8px;
+    --overlay: rgba(32, 86, 155, .55);
+    --danger:#c62828; --danger-2:#b71c1c;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.45 "Segoe UI",Roboto,Inter,Arial,Helvetica,sans-serif}
+  .container{max-width:980px;margin:20px auto 88px;padding:0 12px}
+
+  /* Top */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .title{font-size:20px;font-weight:800;margin:0}
+  .help{display:flex;align-items:center;gap:8px;color:var(--blue-600);font-weight:700;cursor:pointer}
+  .help .q{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);display:grid;place-items:center;background:#f7fbff}
+
+  /* Stepper */
+  .stepper{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;margin:8px 0 14px;display:grid;grid-template-columns:1fr 1fr}
+  .step{padding:10px 12px;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:700;color:#516174}
+  .step svg{width:14px;height:14px}
+  .step.active{background:var(--blue-50);color:var(--blue-600);border-right:1px solid var(--line)}
+
+  /* Blocks */
+  .block{background:var(--blue-50);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 1px 2px rgba(9,30,66,.04);margin-top:10px}
+  .block h3{margin:0;padding:10px 14px;border-bottom:1px solid var(--line);font-size:15px;background:#fff}
+  .block .inner{padding:12px}
+
+  /* Segmented radios */
+  .seg{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:6px 9px;background:#fff;cursor:pointer}
+  .seg input{display:none}
+  .seg .dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--blue-600);display:inline-block}
+  .seg input:checked + .dot{background:var(--blue)}
+  .radio-row{display:flex;gap:10px;flex-wrap:wrap}
+
+  /* Account card */
+  .acct{margin-top:8px;border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;gap:12px;align-items:center;background:#fff}
+  .acct .name{font-weight:800}
+  .acct .meta{font-size:12px;color:#muted;margin-top:2px}
+  .bal{margin-left:auto;display:flex;gap:22px;flex-wrap:wrap}
+  .bal .k{font-size:12.5px}
+  .bal .k span{display:block}
+  .bal .k .t{color:#6b7a8b;font-size:11.5px}
+  .bal .k .v{font-weight:800}
+  .btn-ghost{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:#f8fbff;display:grid;place-items:center}
+  .btn-ghost svg{width:16px;height:16px;color:#5c6f82}
+
+  /* Form grid */
+  .row{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:center;margin:8px 0}
+  .label{font-weight:700;color:#425368;white-space:nowrap}
+  input[type=text], .select{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:8px;background:#fff;outline:none;font-size:13px}
+  input:focus,.select:focus{border-color:var(--blue-600);box-shadow:0 0 0 3px rgba(30,136,229,.12)}
+  .hint{font-size:12px;color:#607384}
+  .grid2{display:grid;grid-template-columns:1fr auto;gap:8px}
+  .inline-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border-radius:6px;border:1px solid #b9dcff;background:#e7f3ff;color:#0a63a0;font-weight:700;font-size:12.5px}
+  .counter{font-size:12px;color:#6e7d8e;margin-top:4px}
+  .checkbox{display:flex;align-items:center;gap:8px}
+  .tiny-info{width:20px;height:20px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:#0a63a0;background:#fff}
+
+  /* Amount (compact + TL hemen sağında) */
+  .amount{display:inline-flex; align-items:center; gap:4px;}
+  #tutarLira,#tutarKurus{
+    padding:6px 7px; font-size:13px; border:1px solid var(--line); border-radius:6px; background:#fff;
+    direction:ltr; text-align:left; height:34px;
+  }
+  #tutarLira{ width:110px; }
+  #tutarKurus{ width:50px; }
+  .comma{font-weight:800;font-size:15px;line-height:1}
+  .unit{margin-left:4px;font-size:13px;color:#5c6f82}
+
+  /* Fixed CTA */
+  .cta{position:fixed;right:16px;bottom:16px;z-index:20;display:flex;gap:10px;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--blue-600);background:var(--blue);color:#fff;font-weight:800;border-radius:8px;padding:10px 16px;cursor:pointer;text-decoration:none;box-shadow:0 6px 18px rgba(30,136,229,.25)}
+
+  /* Modal + overlay */
+  .overlay{position:fixed;inset:0;background:var(--overlay);display:none;z-index:50}
+  .modal{position:fixed;left:50%;top:26%;transform:translate(-50%,-50%) scale(.98);width:620px;max-width:92vw;background:#fff;border-radius:8px;overflow:hidden;border:1px solid #cfd7e4;box-shadow:0 20px 60px rgba(0,0,0,.25);display:none;z-index:60}
+  .modal.show{transform:translate(-50%,-50%) scale(1)}
+  .modal-header{background:linear-gradient(180deg,var(--danger),var(--danger-2));color:#fff;padding:10px 14px;font-weight:800;display:flex;align-items:center;justify-content:space-between}
+  .modal-title{display:flex;align-items:center;gap:10px}
+  .modal-title .warn{width:22px;height:22px;border-radius:50%;background:#fff;color:#b71c1c;display:grid;place-items:center;font-weight:900}
+  .modal-body{padding:16px 18px;background:#fff}
+  .modal-body ul{margin:6px 0 0 18px}
+  .modal-footer{padding:12px 18px;background:#f7f9fc;display:flex;justify-content:center}
+  .btn-ok{background:#5bc0de;border:1px solid #38a8cb;color:#fff;padding:8px 18px;border-radius:6px;font-weight:800;cursor:pointer}
+  .btn-x{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;line-height:1}
+
+  /* ====== Tablet (≤1024px) ====== */
+  @media (max-width:1024px){
+    .container{margin:14px auto 80px}
+    .row{grid-template-columns:150px 1fr}
+    #tutarLira{width:100px}
+    #tutarKurus{width:48px}
+    .bal{gap:16px}
+  }
+
+  /* ====== Mobile (≤640px) ====== */
+  @media (max-width:640px){
+    body{font-size:12.5px}
+    .title{font-size:18px}
+    .row{grid-template-columns:1fr}
+    .label{margin-bottom:4px}
+    .acct{flex-direction:column;align-items:flex-start}
+    .bal{width:100%;justify-content:space-between}
+    .grid2{grid-template-columns:1fr}
+    .step{padding:8px 10px}
+    .block .inner{padding:10px}
+    #tutarLira{width:96px}
+    #tutarKurus{width:44px}
+    .btn{padding:10px 14px}
+    .cta{right:12px;bottom:12px}
+    .modal{top:35%}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="topbar">
+    <h1 class="title">Hesaba EFT</h1>
+    <div class="help"><span>Yardım</span><span class="q">?</span></div>
+  </div>
+
+  <div class="stepper">
+    <div class="step active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-6.58 8-12A8 8 0 1 0 4 10c0 5.42 8 12 8 12Z" stroke-width="2"/><circle cx="12" cy="10" r="3" stroke-width="2"/></svg>
+      Bilgi Girişi
+    </div>
+    <div class="step">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Onay
+    </div>
+  </div>
+
+  <!-- Ödeme Aracı -->
+  <div class="block">
+    <h3>Ödeme Aracı</h3>
+    <div class="inner">
+      <div class="radio-row" role="group" aria-label="Ödeme Aracı">
+        <label class="seg"><input type="radio" name="src" checked><span class="dot"></span> Vadesiz Hesabımdan</label>
+        <label class="seg"><input type="radio" name="src"><span class="dot"></span> Kredi Kartımdan</label>
+      </div>
+
+      <div class="acct">
+        <div>
+          <div class="name">Vadesiz TL Hesabı</div>
+          <div class="meta">AYDIN ŞUBESİ<br>TR3608477600500099205200848</div>
+        </div>
+        <div class="bal">
+          <div class="k"><span class="t">Güncel Bakiye</span><span class="v">12.453.854,54 TL</span></div>
+          <div class="k"><span class="t">Esnek Hesap Limiti</span><span class="v">2.927.619,59 TL</span></div>
+          <div class="k"><span class="t">Kullanılabilir Bakiye</span><span class="v">15.294.854,54 TL</span></div>
+        </div>
+        <button class="btn-ghost" aria-label="Seçenekler">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alıcı Bilgileri -->
+  <div class="block">
+    <h3>Alıcı Bilgileri</h3>
+    <div class="inner">
+      <div class="row">
+        <div class="label">Gönderim Tipi</div>
+        <div class="radio-row">
+          <label class="seg"><input type="radio" name="tip" checked><span class="dot"></span> IBAN</label>
+          <label class="seg"><input type="radio" name="tip"><span class="dot"></span> Hesap No</label>
+          <label class="seg"><input type="radio" name="tip"><span class="dot"></span> Kolay Adres</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="label" for="iban">IBAN</label>
+        <input type="text" id="iban" placeholder="TR__ ____ ____ ____ ____ ____">
+      </div>
+
+      <div class="row">
+        <label class="label" for="ad">Ad Soyad</label>
+        <div class="grid2">
+          <input type="text" id="ad" placeholder="Ad(lar) ve Soyad">
+          <button class="inline-btn" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 8v4l3 3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Akıllı Rehber’den kayıt seçimi
+          </button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">Ad Soyad İpucu</div>
+        <div class="hint"><strong id="ipucu">—</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- İşlem Bilgileri -->
+  <div class="block">
+    <h3>İşlem Bilgileri</h3>
+    <div class="inner">
+      <div class="row">
+        <label class="label">Tutar</label>
+        <div class="amount">
+          <input type="text" id="tutarLira" value="0" aria-label="Lira">
+          <div class="comma" aria-hidden="true">,</div>
+          <input type="text" id="tutarKurus" value="00" maxlength="2" aria-label="Kuruş">
+          <div class="unit" aria-hidden="true">TL</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="label" for="tarih">İşlem Tarihi</label>
+        <div class="grid2">
+          <input type="text" id="tarih" placeholder="gg/aa/yyyy">
+          <div class="btn-ghost" title="Takvim">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+              <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
+              <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
+              <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="label" for="aciklama">Açıklama</label>
+        <div>
+          <input type="text" id="aciklama" maxlength="200" value="9415 nolu seri transfer">
+          <div class="counter"><span id="cnt">0</span>/200</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="label" for="tur">İşlem Türü</label>
+        <select id="tur" class="select">
+          <option selected>Ticari Ödeme</option>
+          <option>Bireysel Ödeme</option>
+          <option>Kira</option>
+          <option>Hizmet Bedeli</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="label">İşlem İpucu</div>
+        <label class="checkbox">
+          <input type="checkbox"> İşlemi Akıllı Rehbere Ekle
+          <span class="tiny-info" title="Bu alıcıyı sonraki işlemler için kaydeder">?</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sağ altta DEVAM ET -->
+<div class="cta">
+  <button class="btn" id="devamBtn">DEVAM ET</button>
+</div>
+
+<!-- Overlay + Modal -->
+<div class="overlay" id="overlay" aria-hidden="true"></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="uyariBaslik">
+  <div class="modal-header">
+    <div class="modal-title">
+      <span class="warn">!</span>
+      <span id="uyariBaslik">Uyarı</span>
+    </div>
+    <button class="btn-x" id="closeX" aria-label="Kapat">×</button>
+  </div>
+  <div class="modal-body">
+    <ul>
+      <li>SPK/MASAK Özel belge durumu mevcut değildir. Vergi beyannamesi mevcut değildir.</li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-ok" id="okBtn">Tamam</button>
+  </div>
+</div>
+
+<script>
+  // IBAN biçimlendirme
+  const iban = document.getElementById('iban');
+  iban.addEventListener('input', () => {
+    let v = iban.value.replace(/[^0-9a-zA-Z]/g,'').toUpperCase();
+    if (v && !v.startsWith('TR')) v = 'TR' + v.replace(/^TR/, '');
+    const parts = []; for (let i=0;i<v.length;i+=4) parts.push(v.slice(i,i+4));
+    // Yazma sınırı kaldırıldı (slice kaldırıldı)
+    iban.value = parts.join(' ');
+  });
+
+  // Ad Soyad ipucu: her kelimenin ilk 2 harfi + 5 yıldız
+  const ad = document.getElementById('ad');
+  const ipucu = document.getElementById('ipucu');
+  function maskName(s){
+    s = (s || '').trim().replace(/\s+/g,' ');
+    if(!s){ return '—'; }
+    return s.split(' ').map(w=>{
+      const two = w.slice(0,2).toUpperCase();
+      return (two || '').padEnd(2,'*') + '*****';
+    }).join(' ');
+  }
+  function updateHint(){ ipucu.textContent = maskName(ad.value); }
+  ad.addEventListener('input', updateHint); updateHint();
+
+  // Tutar: lira binlik ".", kuruş max 2 hane (soldan sağa)
+  const lira = document.getElementById('tutarLira');
+  const kurus = document.getElementById('tutarKurus');
+  function formatLira(val){
+    val = val.replace(/[^\d]/g,'');
+    if(val === '') return '0';
+    return val.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  }
+  lira.addEventListener('input', ()=>{ lira.value = formatLira(lira.value); });
+  kurus.addEventListener('input', ()=>{ kurus.value = kurus.value.replace(/[^\d]/g,'').slice(0,2); });
+
+  // Tarih: açılışta bugünün tarihi
+  const tarih = document.getElementById('tarih');
+  function todayTR(){
+    const d = new Date();
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yyyy = d.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  }
+  tarih.value = todayTR();
+  tarih.addEventListener('input', ()=>{
+    let v = tarih.value.replace(/[^\d]/g,'').slice(0,8);
+    if(v.length>=5) v = v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);
+    else if(v.length>=3) v = v.slice(0,2)+'/'+v.slice(2);
+    tarih.value = v;
+  });
+
+  // Açıklama sayaç
+  const aciklama = document.getElementById('aciklama');
+  const cnt = document.getElementById('cnt');
+  function u(){ cnt.textContent = aciklama.value.length; }
+  aciklama.addEventListener('input', u); u();
+
+  // Modal göster/gizle
+  const overlay = document.getElementById('overlay');
+  const modal = document.getElementById('modal');
+  const devamBtn = document.getElementById('devamBtn');
+  const okBtn = document.getElementById('okBtn');
+  const closeX = document.getElementById('closeX');
+
+  function openModal(){
+    overlay.style.display='block';
+    modal.style.display='block';
+    modal.classList.add('show');
+  }
+  function closeModal(){
+    overlay.style.display='none';
+    modal.style.display='none';
+    modal.classList.remove('show');
+  }
+  devamBtn.addEventListener('click', openModal);
+  okBtn.addEventListener('click', closeModal);
+  closeX.addEventListener('click', closeModal);
+  overlay.addEventListener('click', closeModal);
+</script>
+</body>
+</html>
